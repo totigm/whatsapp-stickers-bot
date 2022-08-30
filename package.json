@@ -1,0 +1,54 @@
+{
+    "name": "whatsapp-bot-template",
+    "version": "0.0.1",
+    "description": "This is a template for creating WhatsApp bots",
+    "main": "dist/index.js",
+    "bin": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/*"
+    ],
+    "scripts": {
+        "start": "npm run dev",
+        "dev": "nodemon --config nodemon.json src/index.ts",
+        "prebuild": "npm run check",
+        "build": "tsc",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "prettier": "prettier --check src",
+        "prettier:fix": "prettier --write src",
+        "check": "npm run lint && npm run prettier",
+        "check:fix": "npm run lint:fix && npm run prettier:fix",
+        "prod": "set NODE_ENV=prod && node ./dist/index.js"
+    },
+    "dependencies": {
+        "@totigm/whatsapp-bot": "^1.0.5",
+        "tslib": "^2.4.0"
+    },
+    "devDependencies": {
+        "@types/node": "^15.6.1",
+        "@typescript-eslint/eslint-plugin": "^5.33.0",
+        "@typescript-eslint/parser": "^5.33.0",
+        "eslint": "^8.21.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "nodemon": "^2.0.19",
+        "prettier": "^2.7.1",
+        "ts-node": "^10.0.0",
+        "typescript": "^4.7.4"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/totigm/whatsapp-bot-template.git"
+    },
+    "keywords": [
+        "typescript",
+        "template"
+    ],
+    "author": "Toti Muñoz",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/totigm/whatsapp-bot-template/issues"
+    },
+    "homepage": "https://github.com/totigm/whatsapp-bot-template#readme"
+}
