@@ -1,8 +1,15 @@
-# WhatsApp bot template
+# 🤖 WhatsApp stickers bot
 
-This is a template for creating WhatsApp bots.
+This is a WhatsApp bot to convert images and videos to stickers.
 
-This template will help you start a WhatsApp bot without needing to worry about any configuration.
+## 💬 Commands
+
+Besides `help`, the only command supported is `!sticker`, which receives an image or video and return it converted to sticker.
+
+Here is an example of this command:\
+![image converted to sticker](https://user-images.githubusercontent.com/64804554/187542182-17583f84-1a52-4680-82f2-3b78462c91fe.png)
+
+If a video is sent instead of an image, it will return an animated sticker.
 
 ## 📋 Prerequisites
 
