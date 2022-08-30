@@ -8,7 +8,7 @@ assignees: totigm
 ---
 
 ### Document reference
-A [link](https://github.com/totigm/whatsapp-bot-template#readme) to the document to improve, and which part needs improvement.
+A [link](https://github.com/totigm/whatsapp-stickers-bot#readme) to the document to improve, and which part needs improvement.
 
 ### Describe your request
 What is wrong with this document? How can it be improved?
