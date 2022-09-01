@@ -15,6 +15,7 @@ WORKDIR /app
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true" \
     CHROME_BIN=/usr/bin/chromium-browser \
+    IS_DOCKER_CONTAINER=true \
     NODE_ENV=prod
 
 RUN set -x \
