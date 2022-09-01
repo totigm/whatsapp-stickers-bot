@@ -2,6 +2,8 @@
 
 This is a WhatsApp bot to convert images and videos to stickers.
 
+[Live demo](http://wa.me/5492644867397)
+
 ## 💬 Commands
 
 Besides `help`, the only command supported is `!sticker`, which receives an image or video and return it converted to sticker.
