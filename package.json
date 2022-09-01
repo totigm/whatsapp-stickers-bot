@@ -22,7 +22,7 @@
         "prod": "set NODE_ENV=prod && node ./dist/index.js"
     },
     "dependencies": {
-        "@totigm/whatsapp-bot": "^1.0.5",
+        "@totigm/whatsapp-bot": "^1.0.7",
         "tslib": "^2.4.0"
     },
     "devDependencies": {
