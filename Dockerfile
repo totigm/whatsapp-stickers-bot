@@ -3,13 +3,6 @@ FROM --platform=linux/amd64 node:16-alpine AS builder
 
 WORKDIR /app
 
-RUN set -x \
-    && apk update \
-    && apk upgrade \
-    && apk add --no-cache \
-    chromium \
-    ffmpeg
-
 COPY . .
 
 RUN npm install && npm run build
