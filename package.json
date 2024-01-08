@@ -12,7 +12,7 @@
         "start": "npm run dev",
         "dev": "nodemon --config nodemon.json src/index.ts",
         "prebuild": "npm run check",
-        "build": "tsc",
+        "build": "tsc --skipLibCheck",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "prettier": "prettier --check src",
@@ -22,7 +22,7 @@
         "prod": "set NODE_ENV=prod && node ./dist/index.js"
     },
     "dependencies": {
-        "@totigm/whatsapp-bot": "^1.0.7",
+        "@totigm/whatsapp-bot": "^1.0.12",
         "tslib": "^2.4.0"
     },
     "devDependencies": {
