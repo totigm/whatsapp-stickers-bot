@@ -1,5 +1,5 @@
 # Build TS project into JS code
-FROM node:16-alpine AS builder
+FROM --platform=linux/amd64 node:16-alpine AS builder
 
 WORKDIR /app
 
