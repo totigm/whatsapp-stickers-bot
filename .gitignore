@@ -27,4 +27,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # Project
-.wwebjs_auth
+.wwebjs*
