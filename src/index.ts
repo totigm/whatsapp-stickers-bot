@@ -2,6 +2,7 @@ import WhatsappBot from "@totigm/whatsapp-bot";
 import sharp from "sharp";
 import axios from "axios";
 import FormData from "form-data";
+import Jimp from "jimp";
 
 const bot = new WhatsappBot();
 
@@ -12,6 +13,7 @@ interface Transformations {
     grayscale?: boolean;
     modulate?: Modulate;
     removeBg?: boolean;
+    text?: string;
 }
 
 interface Modulate {
@@ -50,6 +52,37 @@ async function removeBackground(imageBuffer: Buffer) {
     }
 }
 
+const GRAVITY_MAP = {
+    top: "north",
+    topright: "northeast",
+    right: "east",
+    bottomright: "southeast",
+    bottom: "south",
+    bottomleft: "southwest",
+    left: "west",
+    topleft: "northwest",
+    center: "center",
+};
+
+function mapGravity(direction) {
+    return GRAVITY_MAP[direction.toLowerCase()] || "center"; // Retorna 'center' como valor por defecto
+}
+
+async function createTextImage(text: string) {
+    // Carga un tipo de letra
+    // definir color
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
+
+    // Mide el tamaño del texto
+    const textDimensions = Jimp.measureText(font, text);
+
+    // Crea una imagen con el tamaño exacto del texto
+    const image = new Jimp(textDimensions, 128, "transparent"); // Altura ajustada a la del tipo de letra
+    image.print(font, 0, 0, text); // Imprime el texto en la imagen
+
+    return await image.getBufferAsync(Jimp.MIME_PNG);
+}
+
 function parseArgs(args) {
     const transformations: Transformations = {};
     const modulate: Modulate = {};
@@ -61,6 +94,11 @@ function parseArgs(args) {
                 if (dimensions.length === 2 && dimensions.every(Number.isInteger)) {
                     transformations.resize = dimensions;
                 }
+                break;
+            }
+            case "text": {
+                // debería aceptar comillas para que vaya todo el texto ahí, nos va a trollear el args del bot
+                transformations.text = value;
                 break;
             }
             case "blur": {
@@ -105,6 +143,7 @@ function parseArgs(args) {
     return transformations;
 }
 
+// estos filtros podrían aplicar para imágenes sin ser convertidas a stickers
 async function processMedia(media, transformations: Transformations) {
     let mediaBuffer = Buffer.from(media.data, "base64");
 
@@ -128,6 +167,12 @@ async function processMedia(media, transformations: Transformations) {
     }
     if (transformations.modulate) {
         pipeline = pipeline.modulate(transformations.modulate);
+    }
+    if (transformations.text) {
+        const textImageBuffer = await createTextImage(transformations.text);
+        const gravity = mapGravity("top");
+
+        pipeline = pipeline.composite([{ input: textImageBuffer, gravity }]);
     }
 
     const processedBuffer = await pipeline.toBuffer();
