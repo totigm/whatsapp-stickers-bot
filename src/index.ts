@@ -1,5 +1,7 @@
 import WhatsappBot from "@totigm/whatsapp-bot";
 import sharp from "sharp";
+import axios from "axios";
+import FormData from "form-data";
 
 const bot = new WhatsappBot();
 
@@ -9,6 +11,7 @@ interface Transformations {
     negate?: boolean;
     grayscale?: boolean;
     modulate?: Modulate;
+    removeBg?: boolean;
 }
 
 interface Modulate {
@@ -18,12 +21,41 @@ interface Modulate {
     lightness?: number | undefined;
 }
 
+async function removeBackground(imageBuffer: Buffer) {
+    const formData = new FormData();
+    formData.append("size", "auto");
+    formData.append("image_file", imageBuffer, "image.jpg");
+
+    try {
+        const response = await axios({
+            method: "post",
+            url: "https://api.remove.bg/v1.0/removebg",
+            data: formData,
+            responseType: "arraybuffer",
+            headers: {
+                ...formData.getHeaders(),
+                "X-Api-Key": "ksFKDjxfSEZURANzsxYrC6cZ",
+            },
+        });
+
+        if (response.status !== 200) {
+            console.error("Error:", response.status, response.statusText);
+            return null;
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Request failed:", error);
+        return null;
+    }
+}
+
 function parseArgs(args) {
     const transformations: Transformations = {};
     const modulate: Modulate = {};
     args.forEach((arg) => {
         const [key, value] = arg.split("=");
-        switch (key) {
+        switch (key.toLowerCase()) {
             case "resize": {
                 const dimensions = value.split(/x|\.|\//i).map(Number);
                 if (dimensions.length === 2 && dimensions.every(Number.isInteger)) {
@@ -41,6 +73,10 @@ function parseArgs(args) {
             }
             case "grayscale": {
                 transformations.grayscale = true;
+                break;
+            }
+            case "removebg": {
+                transformations.removeBg = true;
                 break;
             }
             case "brightness": {
@@ -70,7 +106,13 @@ function parseArgs(args) {
 }
 
 async function processMedia(media, transformations: Transformations) {
-    let pipeline = sharp(Buffer.from(media.data, "base64"));
+    let mediaBuffer = Buffer.from(media.data, "base64");
+
+    if (transformations.removeBg) {
+        mediaBuffer = await removeBackground(mediaBuffer);
+    }
+
+    let pipeline = sharp(mediaBuffer);
 
     if (transformations.resize) {
         pipeline = pipeline.resize(...transformations.resize);
