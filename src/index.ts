@@ -3,27 +3,93 @@ import sharp from "sharp";
 
 const bot = new WhatsappBot();
 
-function parseResizeArgs(args) {
-    const resizeArg = args.find((arg) => arg.includes("resize"));
-
-    if (resizeArg) {
-        const dimensions = resizeArg
-            .split("=")[1]
-            // Split with 'x', '.', or '/', also ignore case for 'x'
-            .split(/x|\.|\//i)
-            .map(Number);
-        if (dimensions.length === 2 && dimensions.every(Number.isInteger)) return dimensions;
-    }
-
-    return null;
+interface Transformations {
+    resize?: [number, number];
+    blur?: number;
+    negate?: boolean;
+    grayscale?: boolean;
+    modulate?: Modulate;
 }
 
-async function resizeMedia(media, dimensions) {
-    const mediaBuffer = Buffer.from(media.data, "base64");
-    const resizedBuffer = await sharp(mediaBuffer)
-        .resize(...dimensions)
-        .toBuffer();
-    return resizedBuffer.toString("base64");
+interface Modulate {
+    brightness?: number | undefined;
+    saturation?: number | undefined;
+    hue?: number | undefined;
+    lightness?: number | undefined;
+}
+
+function parseArgs(args) {
+    const transformations: Transformations = {};
+    const modulate: Modulate = {};
+    args.forEach((arg) => {
+        const [key, value] = arg.split("=");
+        switch (key) {
+            case "resize": {
+                const dimensions = value.split(/x|\.|\//i).map(Number);
+                if (dimensions.length === 2 && dimensions.every(Number.isInteger)) {
+                    transformations.resize = dimensions;
+                }
+                break;
+            }
+            case "blur": {
+                transformations.blur = Number(value);
+                break;
+            }
+            case "negate": {
+                transformations.negate = true;
+                break;
+            }
+            case "grayscale": {
+                transformations.grayscale = true;
+                break;
+            }
+            case "brightness": {
+                modulate.brightness = parseFloat(value);
+                break;
+            }
+            case "saturation": {
+                modulate.saturation = parseFloat(value);
+                break;
+            }
+            case "hue": {
+                modulate.hue = parseFloat(value);
+                break;
+            }
+            case "lightness": {
+                modulate.lightness = parseFloat(value);
+                break;
+            }
+        }
+    });
+
+    if (Object.keys(modulate).length > 0) {
+        transformations.modulate = modulate;
+    }
+
+    return transformations;
+}
+
+async function processMedia(media, transformations: Transformations) {
+    let pipeline = sharp(Buffer.from(media.data, "base64"));
+
+    if (transformations.resize) {
+        pipeline = pipeline.resize(...transformations.resize);
+    }
+    if (transformations.blur) {
+        pipeline = pipeline.blur(transformations.blur);
+    }
+    if (transformations.negate) {
+        pipeline = pipeline.negate();
+    }
+    if (transformations.grayscale) {
+        pipeline = pipeline.grayscale();
+    }
+    if (transformations.modulate) {
+        pipeline = pipeline.modulate(transformations.modulate);
+    }
+
+    const processedBuffer = await pipeline.toBuffer();
+    return processedBuffer.toString("base64");
 }
 
 bot.addCommand(
@@ -41,10 +107,9 @@ bot.addCommand(
                 return "Failed to download media. Please try again.";
             }
 
-            const dimensions = parseResizeArgs(message.args);
-            if (dimensions) {
-                media.data = await resizeMedia(media, dimensions);
-            }
+            const transformations = parseArgs(message.args);
+            const transformationsAmount = Object.keys(transformations).length;
+            if (transformationsAmount) media.data = await processMedia(media, transformations);
 
             message.reply(media, message.from, {
                 sendMediaAsSticker: true,
