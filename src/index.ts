@@ -1,5 +1,6 @@
 import WhatsappBot from "@totigm/whatsapp-bot";
 import { handleImageMessage } from "./image";
+import { handleRecognizeTextImage } from "./textRecognition";
 
 const bot = new WhatsappBot();
 
@@ -18,5 +19,14 @@ bot.addCommand("image", (message) => handleImageMessage(message), {
     example: {
         input: "image [resize=512/512]",
         output: "image edited",
+    },
+});
+
+bot.addCommand("recognizeText", handleRecognizeTextImage, {
+    description: "Recognizes text from an image",
+    explanation: "Send an image and get the text from it",
+    example: {
+        input: "image",
+        output: "This is a test image",
     },
 });

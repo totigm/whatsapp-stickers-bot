@@ -28,3 +28,4 @@ yarn-error.log*
 
 # Project
 .wwebjs*
+*.traineddata
