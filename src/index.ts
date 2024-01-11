@@ -3,7 +3,7 @@ import { handleImageMessage } from "./image";
 
 const bot = new WhatsappBot();
 
-bot.addCommand("sticker", async (message) => handleImageMessage(message, true), {
+bot.addCommand("sticker", (message) => handleImageMessage(message, { isSticker: true }), {
     description: "Convert an image or video to a sticker",
     explanation: "Send an image or video with the command !sticker. Optionally, add 'resize=width/height' to resize the sticker.",
     example: {
@@ -12,7 +12,7 @@ bot.addCommand("sticker", async (message) => handleImageMessage(message, true), 
     },
 });
 
-bot.addCommand("image", async (message) => handleImageMessage(message, false), {
+bot.addCommand("image", (message) => handleImageMessage(message), {
     description: "Edit image",
     explanation: "Send an image with the command !image. Optionally, add 'resize=width/height' to resize it.",
     example: {

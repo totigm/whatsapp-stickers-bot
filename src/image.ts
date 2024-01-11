@@ -67,16 +67,13 @@ function mapGravity(direction) {
 }
 
 async function createTextImage(text: string) {
-    // Carga un tipo de letra
     // definir color
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
 
-    // Mide el tamaño del texto
     const textDimensions = Jimp.measureText(font, text);
 
-    // Crea una imagen con el tamaño exacto del texto
-    const image = new Jimp(textDimensions, 128, "transparent"); // Altura ajustada a la del tipo de letra
-    image.print(font, 0, 0, text); // Imprime el texto en la imagen
+    const image = new Jimp(textDimensions, 128, "transparent");
+    image.print(font, 0, 0, text);
 
     return await image.getBufferAsync(Jimp.MIME_PNG);
 }
@@ -176,7 +173,11 @@ async function processMedia(media, transformations: Transformations) {
     return processedBuffer.toString("base64");
 }
 
-export const handleImageMessage = async (message: HandlerMessage<WhatsappWeb.Message>, isSticker = false) => {
+type ImageOptions = {
+    isSticker?: boolean;
+};
+
+export const handleImageMessage = async (message: HandlerMessage<WhatsappWeb.Message>, { isSticker = false }: ImageOptions = {}) => {
     if (!message.hasMedia) {
         return "Send an image or video to convert it to a sticker";
     }
