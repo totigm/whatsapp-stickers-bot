@@ -11,3 +11,12 @@ bot.addCommand("sticker", async (message) => handleImageMessage(message, true), 
         output: "sticker",
     },
 });
+
+bot.addCommand("image", async (message) => handleImageMessage(message, false), {
+    description: "Edit image",
+    explanation: "Send an image with the command !image. Optionally, add 'resize=width/height' to resize it.",
+    example: {
+        input: "image [resize=512/512]",
+        output: "image edited",
+    },
+});
