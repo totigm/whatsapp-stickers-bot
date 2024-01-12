@@ -1,7 +1,16 @@
 import WhatsappBot from "@totigm/whatsapp-bot";
 import { handleImageMessage } from "./image";
+import { handleYoutubeVideo } from "./youtube";
 
 const bot = new WhatsappBot();
+
+// const bot = new WhatsappBot({
+//     client: {
+//         puppeteer: {
+//             executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+//         },
+//     },
+// });
 
 bot.addCommand("sticker", (message) => handleImageMessage(message, { isSticker: true }), {
     description: "Convert an image or video to a sticker",
@@ -18,5 +27,14 @@ bot.addCommand("image", (message) => handleImageMessage(message), {
     example: {
         input: "image [resize=512/512]",
         output: "image edited",
+    },
+});
+
+bot.addCommand("youtube", handleYoutubeVideo, {
+    description: "Download and send a YouTube video",
+    explanation: "Send a YouTube link with the command !youtube to download and send the video.",
+    example: {
+        input: "https://www.youtube.com/watch?v=example",
+        output: "video file",
     },
 });
