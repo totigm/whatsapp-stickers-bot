@@ -1,4 +1,4 @@
-import { WhatsappWeb, HandlerMessage } from "@totigm/whatsapp-bot";
+import { WAWebJS, HandlerMessage } from "@totigm/whatsapp-bot";
 import sharp from "sharp";
 import axios from "axios";
 import FormData from "form-data";
@@ -177,7 +177,7 @@ type ImageOptions = {
     isSticker?: boolean;
 };
 
-export const handleImageMessage = async (message: HandlerMessage<WhatsappWeb.Message>, { isSticker = false }: ImageOptions = {}) => {
+export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message>, { isSticker = false }: ImageOptions = {}) => {
     if (!message.hasMedia) {
         return "Send an image or video to convert it to a sticker";
     }
