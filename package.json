@@ -22,7 +22,7 @@
         "prod": "set NODE_ENV=prod && node ./dist/index.js"
     },
     "dependencies": {
-        "@totigm/whatsapp-bot": "^1.0.13",
+        "@totigm/whatsapp-bot": "^1.0.14",
         "axios": "^1.6.5",
         "jimp": "^0.22.10",
         "sharp": "^0.33.1",
