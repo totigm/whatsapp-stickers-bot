@@ -1,4 +1,4 @@
-import { WhatsappWeb, HandlerMessage } from "@totigm/whatsapp-bot";
+import { WAWebJS, HandlerMessage } from "@totigm/whatsapp-bot";
 import Tesseract from "tesseract.js";
 
 async function recognizeTextFromImage(base64String) {
@@ -13,7 +13,7 @@ async function recognizeTextFromImage(base64String) {
     }
 }
 
-export const handleRecognizeTextImage = async (message: HandlerMessage<WhatsappWeb.Message>) => {
+export const handleRecognizeTextImage = async (message: HandlerMessage<WAWebJS.Message>) => {
     if (!message.hasMedia) {
         return "Send an image to get its text";
     }
