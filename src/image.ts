@@ -21,6 +21,7 @@ interface Modulate {
     lightness?: number | undefined;
 }
 
+// TODO: use https://www.npmjs.com/package/remove.bg instead
 async function removeBackground(imageBuffer: Buffer) {
     const formData = new FormData();
     formData.append("size", "auto");
