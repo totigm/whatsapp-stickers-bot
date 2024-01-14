@@ -205,8 +205,6 @@ export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message
             : null;
 
         message.reply(media, message.from, messageOptions);
-
-        return "";
     } catch (error) {
         console.error(`Error processing ${typeText} command: ${error}`);
         return `An error occurred while processing your ${typeText}. Please try again.`;
