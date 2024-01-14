@@ -68,7 +68,7 @@ function mapGravity(direction) {
 }
 
 async function createTextImage(text: string) {
-    // definir color
+    // TODO: Define font and size.
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
 
     const textDimensions = Jimp.measureText(font, text);
@@ -82,6 +82,7 @@ async function createTextImage(text: string) {
 function parseArgs(args) {
     const transformations: Transformations = {};
     const modulate: Modulate = {};
+
     args.forEach((arg) => {
         const [key, value] = arg.split("=");
         switch (key.toLowerCase()) {
@@ -93,7 +94,6 @@ function parseArgs(args) {
                 break;
             }
             case "text": {
-                // debería aceptar comillas para que vaya todo el texto ahí, nos va a trollear el args del bot
                 transformations.text = value;
                 break;
             }
@@ -113,6 +113,8 @@ function parseArgs(args) {
                 transformations.removeBg = true;
                 break;
             }
+            // TODO: Check value before assigning.
+            // Error processing sticker command: Error: Expected number for brightness but received NaN of type number
             case "brightness": {
                 modulate.brightness = parseFloat(value);
                 break;
@@ -165,6 +167,8 @@ async function processMedia(media, transformations: Transformations) {
     }
     if (transformations.text) {
         const textImageBuffer = await createTextImage(transformations.text);
+
+        // TODO: Add option for the user to select the gravity and color
         const gravity = mapGravity("top");
 
         pipeline = pipeline.composite([{ input: textImageBuffer, gravity }]);
