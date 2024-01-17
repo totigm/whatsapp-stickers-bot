@@ -29,6 +29,14 @@ async function removeBackground(imageBuffer: Buffer) {
     formData.append("image_file", imageBuffer, "image.jpg");
 
     try {
+        const apiKey = process.env.REMOVE_BG_API_KEY;
+
+        if (!apiKey) {
+            const errorMessage = "[Service unavailable] There's no API key defined for removing the background";
+            console.error(errorMessage);
+            throw errorMessage;
+        }
+
         const response = await axios({
             method: "post",
             url: "https://api.remove.bg/v1.0/removebg",
@@ -36,19 +44,19 @@ async function removeBackground(imageBuffer: Buffer) {
             responseType: "arraybuffer",
             headers: {
                 ...formData.getHeaders(),
-                "X-Api-Key": process.env.REMOVE_BG_API_KEY,
+                "X-Api-Key": apiKey,
             },
         });
 
         if (response.status !== 200) {
             console.error("Error:", response.status, response.statusText);
-            return null;
+            throw response.statusText;
         }
 
         return response.data;
     } catch (error) {
         console.error("Request failed:", error);
-        return null;
+        throw error;
     }
 }
 
@@ -212,6 +220,6 @@ export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message
         message.reply(media, message.from, messageOptions);
     } catch (error) {
         console.error(`Error processing ${typeText} command: ${error}`);
-        return `An error occurred while processing your ${typeText}. Please try again.`;
+        return `An error occurred while processing your ${typeText}.\n\nError: ${error}`;
     }
 };
