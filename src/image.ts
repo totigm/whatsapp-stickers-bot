@@ -3,6 +3,7 @@ import sharp from "sharp";
 import axios from "axios";
 import FormData from "form-data";
 import Jimp from "jimp";
+import "dotenv/config";
 
 interface Transformations {
     resize?: [number, number];
@@ -35,7 +36,7 @@ async function removeBackground(imageBuffer: Buffer) {
             responseType: "arraybuffer",
             headers: {
                 ...formData.getHeaders(),
-                "X-Api-Key": "ksFKDjxfSEZURANzsxYrC6cZ",
+                "X-Api-Key": process.env.REMOVE_BG_API_KEY,
             },
         });
 
