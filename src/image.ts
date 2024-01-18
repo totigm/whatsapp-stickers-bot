@@ -94,7 +94,6 @@ const TEXT_DEFAULTS = {
     heightOffset: 20,
 };
 
-// TODO: Allow multi-line text
 async function createTextImage(text: string, options: Omit<TextOptions, "textPosition"> = {}) {
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
 
