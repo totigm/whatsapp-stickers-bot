@@ -6,33 +6,34 @@ This is a WhatsApp bot to convert images and videos to stickers.
 
 ## 💬 Commands
 
-Besides `!help`, this bot supports two more commands:
+The bot supports two primary commands in addition to the `!help` command:
 
-- `!sticker`: Receives an image or video and convert it into a sticker. If an image is sent, it will return a normal sticker, if a video is sent instead, it will return an animated sticker (gif-like).
-- `!image`: Receives an image and also returns an image. By default it will return the same image as received, this command isn't useful if not combined with one of the arguments listed below.
+- `!sticker`: Converts an image or video into a sticker. For images, it generates a standard sticker, while for videos, it creates an animated sticker (gif-like).
+- `!image`: Processes an image and returns it with applied edits. By default, it returns the original image unless combined with one or more of the following arguments.
 
-### ✨ Arguments list
+### ✨ List of Arguments
 
-Both `!sticker` and `!image` commands support the following optional arguments:
+Both `!sticker` and `!image` commands can be enhanced with these optional arguments:
 
 > [!WARNING]
-> For the `!sticker` command, these arguments will only work for images, but not videos.
+> For the `!sticker` command, arguments are applicable only to images, not videos.
 
-- `resize=width/height`: Resizes the `sticker/image` with the given width and height, these two can be separated using `x`, `.`, or `/`.
-- `negate`: Negate the `sticker/image`. No value needed.
-- `grayscale`/`greyscale`: Make the `sticker/image` black and white. No value needed.
-- `blur=level`: Blurs the `sticker/image`. This argument expects a value between 0 and 100, 0 being not blurred at all, and 100 fully blurred.
-- `lightness=level`: Update the lightness of the `sticker/image`. This argument expects a value between 0 and 100, 0 being not lightened, and 100 fully lightened.
-- `brightness=level`: Update the brightness of the `sticker/image`. This argument expects a value between 0 and 100, 0 being not bright, and 100 fully bright.
-- `saturation=level`: Update the saturation of the `sticker/image`. This argument expects a value between 0 and 100, 0 being not saturated, and 100 fully saturated.
-- `hue=level`: Update the hue of the `sticker/image`. This argument expects a value between 0 and 360.
-- `removeBg`: Removes the background from the `sticker/image`. This argument doesn't expect a value, but a [remove.bg API key](https://www.remove.bg/es/dashboard#api-key) is needed in the [.env file](./.env.example)
-- `bgColor=color`: Removes the background from the `sticker/image` and replace it with a color. This argument expects a color that can be the name (e.g. `red`), or an hex code (`#ff0000`).
-- `bgImageUrl=URL`: Removes the background from the `sticker/image` and replace it with an image. This arguments expects an image URL as a value.
-- `text='Your text'`: Adds a text to the image. This arguments expects a string.
-- `textSize=size`: Updates the text from the previous argument. If there's no text, it doesn't do anything. This argument expects a number and defaults to `128`.
-- `textColor=color`: Updates the color from the `text` argument. If there's no text, it doesn't do anything. This argument expects a color that can be the name (e.g. `red`), or an hex code (`#ff0000`) and defaults to `black`.
-- `textPosition=position`: Changes the position where the text is displayed. If there's no text, it doesn't do anything. This arguments expect one of the following options: `top`, `topRight`, `right`, `bottomRight`, `bottom`, `bottomLeft`, `left`, `topLeft`, or `center`. Defaults to `top`.
+- **`resize=width/height`**: Resizes the sticker/image to the specified width and height. Use `x`, `.`, or `/` as separators.
+- **`negate`**: Inverts the colors of the sticker/image. No additional value required.
+- **`grayscale`/`greyscale`**: Converts the sticker/image to black and white. No additional value required.
+- **`blur=level`**: Applies a blur effect to the sticker/image. Accepts values from 0 (no blur) to 100 (fully blurred).
+- **`lightness=level`**: Adjusts the lightness of the sticker/image. Accepts values from 0 (normal) to 100 (max lightness).
+- **`brightness=level`**: Modifies the brightness. Accepts values from 0 (normal) to 100 (max brightness).
+- **`saturation=level`**: Alters the saturation level. Accepts values from 0 (no saturation) to 100 (full saturation).
+- **`hue=level`**: Changes the hue. Accepts values from 0 to 360 degrees.
+- **`removeBg`**: Removes the background. Requires a [remove.bg API key](https://www.remove.bg/es/dashboard#api-key) in the [.env file](./.env.example). No additional value required.
+- **`bgColor=color`**: Replaces the background with a specified color. Accepts color names (e.g., `red`) or hex codes (e.g., `#ff0000`).
+- **`bgImageUrl=URL`**: Replaces the background with an image from the provided URL.
+- **`text='Your text'`**: Adds custom text to the image. Expects a string.
+- **`textSize=size`**: Sets the size of the text. Effective only if `text` is added. Default is `128`.
+- **`textColor=color`**: Sets the text color. Effective only if `text` is added. Accepts color names or hex codes, defaulting to `black`.
+- **`textPosition=position`**: Adjusts text position. Effective only if `text` is added. Options include `top`, `topRight`, `right`, `bottomRight`, `bottom`, `bottomLeft`, `left`, `topLeft`, and `center`. Default is `top`.
+
 
 Here is an example of this command:\
 ![image converted to sticker](https://user-images.githubusercontent.com/64804554/187542182-17583f84-1a52-4680-82f2-3b78462c91fe.png)
