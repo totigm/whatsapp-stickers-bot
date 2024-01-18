@@ -9,7 +9,7 @@ interface Transformations {
     blur?: number;
     negate?: boolean;
     grayscale?: boolean;
-    modulate?: Modulate;
+    modulate?: Partial<Modulate>;
     removeBg?: boolean;
     text?: string;
 }
@@ -75,21 +75,47 @@ async function createTextImage(text: string) {
     return await image.getBufferAsync(Jimp.MIME_PNG);
 }
 
-function parseArgs(args) {
+function parseNumber(value: unknown): number | undefined {
+    // Attempt to convert the value to a number using parseFloat
+    const numericValue = typeof value === "string" ? parseFloat(value) : value;
+
+    // Check if the value is a number and not NaN
+    if (typeof numericValue === "number" && !isNaN(numericValue)) {
+        return numericValue;
+    }
+
+    // If it's not a number or cannot be converted, return undefined
+    return undefined;
+}
+
+function parseArgs(argsMap: { [key: string]: string | true }) {
     const transformations: Transformations = {};
     const modulate: Modulate = {};
 
-    args.forEach((arg) => {
-        const [key, value] = arg.split("=");
+    for (const key in argsMap) {
+        const value = argsMap[key];
         switch (key.toLowerCase()) {
             case "resize": {
-                const dimensions = value.split(/x|\.|\//i).map(Number);
-                if (dimensions.length === 2 && dimensions.every(Number.isInteger)) {
-                    transformations.resize = dimensions;
+                if (typeof value !== "string") {
+                    throw new Error("Invalid input: Resize arg needs a string");
                 }
+
+                // Split with 'x', '/', or '.'
+                const dimensions = value.split(/x|\.|\//i).map(Number);
+                if (dimensions.length < 2 && !dimensions.every(Number.isInteger)) {
+                    throw new Error("Invalid input: Resize arg needs two values separated by 'x', slash, or point");
+                }
+
+                const [width, height] = dimensions;
+                transformations.resize = [width, height];
+
                 break;
             }
             case "text": {
+                if (typeof value !== "string") {
+                    throw new Error("Invalid input: Text arg need a string");
+                }
+
                 transformations.text = value;
                 break;
             }
@@ -112,23 +138,43 @@ function parseArgs(args) {
             // TODO: Check value before assigning.
             // Error processing sticker command: Error: Expected number for brightness but received NaN of type number
             case "brightness": {
-                modulate.brightness = parseFloat(value);
+                const parsedNumber = parseNumber(value);
+                if (!parsedNumber) {
+                    throw new Error("Invalid input: Brightness arg needs to be a number");
+                }
+
+                modulate.brightness = parsedNumber;
                 break;
             }
             case "saturation": {
-                modulate.saturation = parseFloat(value);
+                const parsedNumber = parseNumber(value);
+                if (!parsedNumber) {
+                    throw new Error("Invalid input: Saturation arg needs to be a number");
+                }
+
+                modulate.saturation = parsedNumber;
                 break;
             }
             case "hue": {
-                modulate.hue = parseFloat(value);
+                const parsedNumber = parseNumber(value);
+                if (!parsedNumber) {
+                    throw new Error("Invalid input: Hue arg needs to be a number");
+                }
+
+                modulate.hue = parsedNumber;
                 break;
             }
             case "lightness": {
-                modulate.lightness = parseFloat(value);
+                const parsedNumber = parseNumber(value);
+                if (!parsedNumber) {
+                    throw new Error("Invalid input: Lightness arg needs to be a number");
+                }
+
+                modulate.lightness = parsedNumber;
                 break;
             }
         }
-    });
+    }
 
     if (Object.keys(modulate).length > 0) {
         transformations.modulate = modulate;
@@ -194,7 +240,7 @@ export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message
             return "Failed to download media. Please try again.";
         }
 
-        const transformations = parseArgs(message.args);
+        const transformations = parseArgs(message.argsMap);
         const transformationsAmount = Object.keys(transformations).length;
         if (transformationsAmount) media.data = await processMedia(media, transformations);
 
@@ -206,8 +252,8 @@ export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message
             : null;
 
         message.reply(media, message.from, messageOptions);
-    } catch (error) {
-        console.error(`Error processing ${typeText} command: ${error}`);
-        return `An error occurred while processing your ${typeText}.\n\nError: ${error}`;
+    } catch (err) {
+        console.error(`Error processing ${typeText} command: ${err}`);
+        return `An error occurred while processing your ${typeText}.\n\n${err}`;
     }
 };
