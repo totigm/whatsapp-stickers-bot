@@ -113,9 +113,7 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
         const value = argsMap[key];
         switch (key.toLowerCase()) {
             case "resize": {
-                if (typeof value !== "string") {
-                    throw new Error("Invalid input: Resize arg needs a string");
-                }
+                if (typeof value !== "string") throw new Error("Invalid input: Resize arg needs a string");
 
                 // Split with 'x', '/', or '.'
                 const dimensions = value.split(/x|\.|\//i).map(Number);
@@ -129,15 +127,16 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
                 break;
             }
             case "text": {
-                if (typeof value !== "string") {
-                    throw new Error("Invalid input: Text arg need a string");
-                }
+                if (typeof value !== "string") throw new Error("Invalid input: Text arg need a string");
 
                 transformations.text = value;
                 break;
             }
             case "blur": {
-                transformations.blur = Number(value);
+                const parsedValue = parseNumber(value);
+                if (!parsedValue) throw new Error("Invalid input: Blur arg needs to be a number");
+
+                transformations.blur = parsedValue;
                 break;
             }
             case "negate": {
@@ -162,46 +161,38 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             }
             case "bgimageurl": {
                 if (typeof value !== "string") {
-                    throw "Invalid input: Background image url arg need a string";
+                    throw "Invalid input: Background image URL arg need a string";
                 }
 
                 backgroundOptions.bgImageUrl = value;
                 break;
             }
             case "brightness": {
-                const parsedNumber = parseNumber(value);
-                if (!parsedNumber) {
-                    throw new Error("Invalid input: Brightness arg needs to be a number");
-                }
+                const parsedValue = parseNumber(value);
+                if (!parsedValue) throw new Error("Invalid input: Brightness arg needs to be a number");
 
-                modulate.brightness = parsedNumber;
+                modulate.brightness = parsedValue;
                 break;
             }
             case "saturation": {
-                const parsedNumber = parseNumber(value);
-                if (!parsedNumber) {
-                    throw new Error("Invalid input: Saturation arg needs to be a number");
-                }
+                const parsedValue = parseNumber(value);
+                if (!parsedValue) throw new Error("Invalid input: Saturation arg needs to be a number");
 
-                modulate.saturation = parsedNumber;
+                modulate.saturation = parsedValue;
                 break;
             }
             case "hue": {
-                const parsedNumber = parseNumber(value);
-                if (!parsedNumber) {
-                    throw new Error("Invalid input: Hue arg needs to be a number");
-                }
+                const parsedValue = parseNumber(value);
+                if (!parsedValue) throw new Error("Invalid input: Hue arg needs to be a number");
 
-                modulate.hue = parsedNumber;
+                modulate.hue = parsedValue;
                 break;
             }
             case "lightness": {
-                const parsedNumber = parseNumber(value);
-                if (!parsedNumber) {
-                    throw new Error("Invalid input: Lightness arg needs to be a number");
-                }
+                const parsedValue = parseNumber(value);
+                if (!parsedValue) throw new Error("Invalid input: Lightness arg needs to be a number");
 
-                modulate.lightness = parsedNumber;
+                modulate.lightness = parsedValue;
                 break;
             }
         }
@@ -288,7 +279,8 @@ export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message
 
         message.reply(media, message.from, messageOptions);
     } catch (err) {
-        console.error(`Error processing ${typeText} command: ${err}`);
-        return `An error occurred while processing your ${typeText}.\n\n${err}`;
+        const errorMessage = err instanceof Error ? err.message : err;
+        console.error(`Error processing ${typeText} command: ${errorMessage}`);
+        return `An error occurred while processing your ${typeText}.\n\n${errorMessage}`;
     }
 };
