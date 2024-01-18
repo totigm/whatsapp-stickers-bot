@@ -1,6 +1,7 @@
 import { WAWebJS, HandlerMessage } from "@totigm/whatsapp-bot";
 import sharp from "sharp";
 import Jimp from "jimp";
+import { ColorActionName } from "@jimp/plugin-color";
 import { removeBackgroundFromImageBase64, RemoveBgBase64Options } from "remove.bg";
 import "dotenv/config";
 
@@ -13,18 +14,25 @@ interface Transformations {
     removeBg?: boolean;
     backgroundOptions?: Partial<BackgroundOptions>;
     text?: string;
+    textOptions?: TextOptions;
 }
 
 interface Modulate {
-    brightness?: number | undefined;
-    saturation?: number | undefined;
-    hue?: number | undefined;
-    lightness?: number | undefined;
+    brightness?: number;
+    saturation?: number;
+    hue?: number;
+    lightness?: number;
 }
 
 interface BackgroundOptions {
     bgColor?: string;
     bgImageUrl?: string;
+}
+
+interface TextOptions {
+    textSize?: number;
+    textColor?: string;
+    textPosition?: TextGravityKeys;
 }
 
 async function removeBackground(base64img: string, options?: BackgroundOptions) {
@@ -63,23 +71,27 @@ async function removeBackground(base64img: string, options?: BackgroundOptions) 
     }
 }
 
-const GRAVITY_MAP = {
-    top: "north",
-    topright: "northeast",
-    right: "east",
-    bottomright: "southeast",
-    bottom: "south",
-    bottomleft: "southwest",
-    left: "west",
-    topleft: "northwest",
-    center: "center",
-};
-
-function mapGravity(direction) {
-    return GRAVITY_MAP[direction.toLowerCase()] || "center"; // Retorna 'center' como valor por defecto
+enum TextGravity {
+    top = "north",
+    topright = "northeast",
+    right = "east",
+    bottomright = "southeast",
+    bottom = "south",
+    bottomleft = "southwest",
+    left = "west",
+    topleft = "northwest",
+    center = "center",
 }
 
-async function createTextImage(text: string) {
+type TextGravityKeys = keyof typeof TextGravity;
+
+function getTextGravity(direction?: TextGravityKeys): TextGravity {
+    return TextGravity[direction?.toLowerCase()] || TextGravity.top;
+}
+
+const DEFAULT_TEXT_SIZE = 256;
+
+async function createTextImage(text: string, options?: Omit<TextOptions, "textPosition">) {
     // TODO: Define font and size.
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
 
@@ -87,6 +99,18 @@ async function createTextImage(text: string) {
 
     const image = new Jimp(textDimensions, 128, "transparent");
     image.print(font, 0, 0, text);
+
+    const textSize = options?.textSize ?? DEFAULT_TEXT_SIZE;
+    const sizeRatio = textSize / 128;
+
+    const width = textDimensions * sizeRatio;
+    const height = 128 * sizeRatio;
+
+    image.resize(width, height);
+
+    if (options?.textColor) {
+        image.color([{ apply: ColorActionName.XOR, params: [options.textColor] }]);
+    }
 
     return await image.getBufferAsync(Jimp.MIME_PNG);
 }
@@ -104,10 +128,15 @@ function parseNumber(value: unknown): number | undefined {
     return undefined;
 }
 
+function isObjectEmpty(object: unknown) {
+    return Object.keys(object).length === 0;
+}
+
 function parseArgs(argsMap: { [key: string]: string | true }) {
     const transformations: Transformations = {};
     const modulate: Modulate = {};
     const backgroundOptions: BackgroundOptions = {};
+    const textOptions: TextOptions = {};
 
     for (const key in argsMap) {
         const value = argsMap[key];
@@ -127,9 +156,33 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
                 break;
             }
             case "text": {
-                if (typeof value !== "string") throw new Error("Invalid input: Text arg need a string");
+                if (typeof value !== "string") throw new Error("Invalid input: Text arg needs to be a string");
 
                 transformations.text = value;
+                break;
+            }
+            case "textsize": {
+                const parsedValue = parseNumber(value);
+                if (!parsedValue) throw new Error("Invalid input: TextSize arg needs to be a number");
+
+                textOptions.textSize = parsedValue;
+                break;
+            }
+            case "textcolor": {
+                if (typeof value !== "string") throw new Error("Invalid input: Text color arg needs to be a string");
+
+                textOptions.textColor = value;
+                break;
+            }
+            case "textposition": {
+                if (typeof value !== "string") throw new Error("Invalid input: Text position arg needs to be a string");
+
+                const gravityKeysArray = Object.keys(TextGravity);
+                if (!gravityKeysArray.includes(value)) {
+                    throw new Error(`Invalid input: Text position arg needs to be one of: ${gravityKeysArray.join(", ")}`);
+                }
+
+                textOptions.textPosition = value as TextGravityKeys;
                 break;
             }
             case "blur": {
@@ -153,7 +206,7 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             }
             case "bgcolor": {
                 if (typeof value !== "string") {
-                    throw "Invalid input: Background color arg need a string";
+                    throw "Invalid input: Background color arg needs to be a string";
                 }
 
                 backgroundOptions.bgColor = value;
@@ -161,7 +214,7 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             }
             case "bgimageurl": {
                 if (typeof value !== "string") {
-                    throw "Invalid input: Background image URL arg need a string";
+                    throw "Invalid input: Background image URL arg needs to be a string";
                 }
 
                 backgroundOptions.bgImageUrl = value;
@@ -198,13 +251,14 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
         }
     }
 
-    if (Object.keys(modulate).length > 0) {
+    if (!isObjectEmpty(modulate)) {
         transformations.modulate = modulate;
     }
-    if (Object.keys(backgroundOptions).length > 0) {
+    if (!isObjectEmpty(backgroundOptions)) {
         transformations.removeBg = true;
         transformations.backgroundOptions = backgroundOptions;
     }
+    transformations.textOptions = textOptions;
 
     return transformations;
 }
@@ -235,10 +289,10 @@ async function processMedia(media, transformations: Transformations) {
         pipeline = pipeline.modulate(transformations.modulate);
     }
     if (transformations.text) {
-        const textImageBuffer = await createTextImage(transformations.text);
+        const { textPosition, ...textImageOptions } = transformations.textOptions;
 
-        // TODO: Add option for the user to select the gravity and color
-        const gravity = mapGravity("top");
+        const textImageBuffer = await createTextImage(transformations.text, textImageOptions);
+        const gravity = getTextGravity(textPosition);
 
         pipeline = pipeline.composite([{ input: textImageBuffer, gravity }]);
     }
