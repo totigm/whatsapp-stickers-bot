@@ -6,12 +6,36 @@ This is a WhatsApp bot to convert images and videos to stickers.
 
 ## 💬 Commands
 
-Besides `help`, the only command supported is `!sticker`, which receives an image or video and return it converted to sticker.
+Besides `!help`, this bot supports two more commands:
+
+- `!sticker`: Receives an image or video and convert it into a sticker. If an image is sent, it will return a normal sticker, if a video is sent instead, it will return an animated sticker (gif-like).
+- `!image`: Receives an image and also returns an image. By default it will return the same image as received, this command isn't useful if not combined with one of the arguments listed below.
+
+### ✨ Arguments list
+
+Both `!sticker` and `!image` commands support the following optional arguments:
+
+> [!WARNING]
+> For the `!sticker` command, these arguments will only work for images, but not videos.
+
+- `resize=width/height`: Resizes the `sticker/image` with the given width and height, these two can be separated using `x`, `.`, or `/`.
+- `negate`: Negate the `sticker/image`. No value needed.
+- `grayscale`/`greyscale`: Make the `sticker/image` black and white. No value needed.
+- `blur=level`: Blurs the `sticker/image`. This argument expects a value between 0 and 100, 0 being not blurred at all, and 100 fully blurred.
+- `lightness=level`: Update the lightness of the `sticker/image`. This argument expects a value between 0 and 100, 0 being not lightened, and 100 fully lightened.
+- `brightness=level`: Update the brightness of the `sticker/image`. This argument expects a value between 0 and 100, 0 being not bright, and 100 fully bright.
+- `saturation=level`: Update the saturation of the `sticker/image`. This argument expects a value between 0 and 100, 0 being not saturated, and 100 fully saturated.
+- `hue=level`: Update the hue of the `sticker/image`. This argument expects a value between 0 and 360.
+- `removeBg`: Removes the background from the `sticker/image`. This argument doesn't expect a value, but a [remove.bg API key](https://www.remove.bg/es/dashboard#api-key) is needed in the [.env file](./.env.example)
+- `bgColor=color`: Removes the background from the `sticker/image` and replace it with a color. This argument expects a color that can be the name (e.g. `red`), or an hex code (`#ff0000`).
+- `bgImageUrl=URL`: Removes the background from the `sticker/image` and replace it with an image. This arguments expects an image URL as a value.
+- `text='Your text'`: Adds a text to the image. This arguments expects a string.
+- `textSize=size`: Updates the text from the previous argument. If there's no text, it doesn't do anything. This argument expects a number and defaults to `128`.
+- `textColor=color`: Updates the color from the `text` argument. If there's no text, it doesn't do anything. This argument expects a color that can be the name (e.g. `red`), or an hex code (`#ff0000`) and defaults to `black`.
+- `textPosition=position`: Changes the position where the text is displayed. If there's no text, it doesn't do anything. This arguments expect one of the following options: `top`, `topRight`, `right`, `bottomRight`, `bottom`, `bottomLeft`, `left`, `topLeft`, or `center`. Defaults to `top`.
 
 Here is an example of this command:\
 ![image converted to sticker](https://user-images.githubusercontent.com/64804554/187542182-17583f84-1a52-4680-82f2-3b78462c91fe.png)
-
-If a video is sent instead of an image, it will return an animated sticker.
 
 ## 📋 Prerequisites
 

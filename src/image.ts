@@ -182,12 +182,14 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             case "textposition": {
                 if (typeof value !== "string") throw new Error("Invalid input: Text position arg needs to be a string");
 
+                const newValue = value.toLowerCase();
+
                 const gravityKeysArray = Object.keys(TextGravity);
-                if (!gravityKeysArray.includes(value)) {
+                if (!gravityKeysArray.includes(newValue)) {
                     throw new Error(`Invalid input: Text position arg needs to be one of: ${gravityKeysArray.join(", ")}`);
                 }
 
-                textOptions.textPosition = value as TextGravityKeys;
+                textOptions.textPosition = newValue as TextGravityKeys;
                 break;
             }
             case "blur": {
