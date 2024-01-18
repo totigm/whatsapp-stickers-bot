@@ -337,9 +337,11 @@ export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message
             return "Failed to download media. Please try again.";
         }
 
-        const transformations = parseArgs(message.argsMap);
-        const transformationsAmount = Object.keys(transformations).length;
-        if (transformationsAmount) media.data = await processMedia(media, transformations);
+        if (media.mimetype.includes("image")) {
+            const transformations = parseArgs(message.argsMap);
+            const transformationsAmount = Object.keys(transformations).length;
+            if (transformationsAmount) media.data = await processMedia(media, transformations);
+        }
 
         const messageOptions = isSticker
             ? {
