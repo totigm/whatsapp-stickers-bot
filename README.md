@@ -41,7 +41,7 @@ Both `!sticker` and `!image` commands can be enhanced with these optional argume
 Here is an example of the base command:\
 ![Base command](https://github.com/totigm/whatsapp-stickers-bot/assets/64804554/446259b2-2cc6-459d-a546-442316df23ac)
 > [!NOTE]
-> For more detailed examples, please see the [examples](./docs/examples.md) documentation.
+> For more detailed examples, please see the [examples](./docs/EXAMPLES.md) documentation.
 
 ## 📋 Prerequisites
 
