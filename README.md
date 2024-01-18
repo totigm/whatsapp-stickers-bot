@@ -22,21 +22,26 @@ Both `!sticker` and `!image` commands can be enhanced with these optional argume
 - **`negate`**: Inverts the colors of the sticker/image. No additional value required.
 - **`grayscale`/`greyscale`**: Converts the sticker/image to black and white. No additional value required.
 - **`blur=level`**: Applies a blur effect to the sticker/image. Accepts values from 0 (no blur) to 100 (fully blurred).
-- **`lightness=level`**: Adjusts the lightness of the sticker/image. Accepts values from 0 (normal) to 100 (max lightness).
-- **`brightness=level`**: Modifies the brightness. Accepts values from 0 (normal) to 100 (max brightness).
-- **`saturation=level`**: Alters the saturation level. Accepts values from 0 (no saturation) to 100 (full saturation).
+- **`lightness=level`**: Adjusts the lightness of the sticker/image. Accepts numeric values. Lightness is additive, impacting the overall brightness without altering the relative luminance of colors.
+- **`brightness=level`**: Modifies the brightness of the sticker/image. Accepts numeric values. Brightness operates multiplicatively, affecting the luminance of each color in the image.
+- **`saturation=level`**: Alters the saturation level. Accepts a numeric value, enhancing or reducing the color intensity.
 - **`hue=level`**: Changes the hue. Accepts values from 0 to 360 degrees.
 - **`removeBg`**: Removes the background. Requires a [remove.bg API key](https://www.remove.bg/es/dashboard#api-key) in the [.env file](./.env.example). No additional value required.
 - **`bgColor=color`**: Replaces the background with a specified color. Accepts color names (e.g., `red`) or hex codes (e.g., `#ff0000`).
 - **`bgImageUrl=URL`**: Replaces the background with an image from the provided URL.
 - **`text='Your text'`**: Adds custom text to the image. Expects a string.
-- **`textSize=size`**: Sets the size of the text. Effective only if `text` is added. Default is `128`.
-- **`textColor=color`**: Sets the text color. Effective only if `text` is added. Accepts color names or hex codes, defaulting to `black`.
-- **`textPosition=position`**: Adjusts text position. Effective only if `text` is added. Options include `top`, `topRight`, `right`, `bottomRight`, `bottom`, `bottomLeft`, `left`, `topLeft`, and `center`. Default is `top`.
+- **`textSize=size`**: Sets the size of the text. Effective only if text is added. Default is `128`.
+- **`textColor=color`**: Sets the text color. Effective only if text is added. Accepts color names or hex codes, defaulting to `black`.
+- **`textPosition=position`**: Adjusts text position. Effective only if text is added. Options include `top`, `topRight`, `right`, `bottomRight`, `bottom`, `bottomLeft`, `left`, `topLeft`, and `center`. Default is `top`.
+
+> [!TIP]
+> Multiple arguments can be combined and used at the same time for more customized effects.
 
 
-Here is an example of this command:\
-![image converted to sticker](https://user-images.githubusercontent.com/64804554/187542182-17583f84-1a52-4680-82f2-3b78462c91fe.png)
+Here is an example of the base command:\
+![Base command](https://github.com/totigm/whatsapp-stickers-bot/assets/64804554/446259b2-2cc6-459d-a546-442316df23ac)
+> [!NOTE]
+> For more detailed examples, please see the [examples](./docs/examples.md) documentation.
 
 ## 📋 Prerequisites
 
