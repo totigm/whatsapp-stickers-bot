@@ -1,6 +1,6 @@
 {
     "name": "whatsapp-stickers-bot",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "This is a WhatsApp bot to convert images and videos to stickers",
     "main": "dist/index.js",
     "bin": "dist/index.js",
