@@ -1,8 +1,7 @@
 import { WAWebJS, HandlerMessage } from "@totigm/whatsapp-bot";
 import sharp from "sharp";
-import axios from "axios";
-import FormData from "form-data";
 import Jimp from "jimp";
+import { removeBackgroundFromImageBase64 } from "remove.bg";
 import "dotenv/config";
 
 interface Transformations {
@@ -22,41 +21,29 @@ interface Modulate {
     lightness?: number | undefined;
 }
 
-// TODO: use https://www.npmjs.com/package/remove.bg instead
-async function removeBackground(imageBuffer: Buffer) {
-    const formData = new FormData();
-    formData.append("size", "auto");
-    formData.append("image_file", imageBuffer, "image.jpg");
-
+async function removeBackground(base64img: string) {
     try {
         const apiKey = process.env.REMOVE_BG_API_KEY;
-
         if (!apiKey) {
-            const errorMessage = "[Service unavailable] There's no API key defined for removing the background";
-            console.error(errorMessage);
-            throw errorMessage;
+            throw "There's no API key defined for removing the background";
         }
 
-        const response = await axios({
-            method: "post",
-            url: "https://api.remove.bg/v1.0/removebg",
-            data: formData,
-            responseType: "arraybuffer",
-            headers: {
-                ...formData.getHeaders(),
-                "X-Api-Key": apiKey,
-            },
+        const { base64img: resultImage } = await removeBackgroundFromImageBase64({
+            apiKey,
+            base64img,
+            position: "center",
+            crop: true,
+            format: "png",
         });
 
-        if (response.status !== 200) {
-            console.error("Error:", response.status, response.statusText);
-            throw response.statusText;
+        if (!resultImage) {
+            throw "There was an error removing the background";
         }
 
-        return response.data;
-    } catch (error) {
-        console.error("Request failed:", error);
-        throw error;
+        return resultImage;
+    } catch (err) {
+        const error = err as { title: string; code: string };
+        throw error.title;
     }
 }
 
@@ -154,7 +141,8 @@ async function processMedia(media, transformations: Transformations) {
     let mediaBuffer = Buffer.from(media.data, "base64");
 
     if (transformations.removeBg) {
-        mediaBuffer = await removeBackground(mediaBuffer);
+        const mediaWithoutBackground = await removeBackground(media.data);
+        if (mediaWithoutBackground) mediaBuffer = Buffer.from(mediaWithoutBackground, "base64");
     }
 
     let pipeline = sharp(mediaBuffer);
