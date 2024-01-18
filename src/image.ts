@@ -167,7 +167,9 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             }
             case "textsize": {
                 const parsedValue = parseNumber(value);
-                if (!parsedValue) throw new Error("Invalid input: TextSize arg needs to be a number");
+                if (parsedValue === undefined || parsedValue < 0) {
+                    throw new Error("Invalid input: TextSize arg needs to be a positive number");
+                }
 
                 textOptions.textSize = parsedValue;
                 break;
@@ -193,7 +195,9 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             }
             case "blur": {
                 const parsedValue = parseNumber(value);
-                if (!parsedValue) throw new Error("Invalid input: Blur arg needs to be a number");
+                if (parsedValue === undefined || parsedValue < 0.3 || parsedValue > 1000) {
+                    throw new Error("Invalid input: Blur arg needs to be a number between 0.3 and 1000");
+                }
 
                 transformations.blur = parsedValue;
                 break;
@@ -232,28 +236,32 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
             }
             case "brightness": {
                 const parsedValue = parseNumber(value);
-                if (!parsedValue) throw new Error("Invalid input: Brightness arg needs to be a number");
+                if (parsedValue === undefined || parsedValue < 0) {
+                    throw new Error("Invalid input: Brightness arg needs to be a positive number");
+                }
 
                 modulate.brightness = parsedValue;
                 break;
             }
             case "saturation": {
                 const parsedValue = parseNumber(value);
-                if (!parsedValue) throw new Error("Invalid input: Saturation arg needs to be a number");
+                if (parsedValue === undefined || parsedValue < 0) {
+                    throw new Error("Invalid input: Saturation arg needs to be a positive number");
+                }
 
                 modulate.saturation = parsedValue;
                 break;
             }
             case "hue": {
                 const parsedValue = parseNumber(value);
-                if (!parsedValue) throw new Error("Invalid input: Hue arg needs to be a number");
+                if (parsedValue === undefined) throw new Error("Invalid input: Hue arg needs to be a number");
 
                 modulate.hue = parsedValue;
                 break;
             }
             case "lightness": {
                 const parsedValue = parseNumber(value);
-                if (!parsedValue) throw new Error("Invalid input: Lightness arg needs to be a number");
+                if (parsedValue === undefined) throw new Error("Invalid input: Lightness arg needs to be a number");
 
                 modulate.lightness = parsedValue;
                 break;

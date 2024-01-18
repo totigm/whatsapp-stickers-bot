@@ -21,10 +21,10 @@ Both `!sticker` and `!image` commands can be enhanced with these optional argume
 - **`resize=width/height`**: Resizes the sticker/image to the specified width and height. Use `x`, `.`, or `/` as separators.
 - **`negate`**: Inverts the colors of the sticker/image. No additional value required.
 - **`grayscale`/`greyscale`**: Converts the sticker/image to black and white. No additional value required.
-- **`blur=level`**: Applies a blur effect to the sticker/image. Accepts values from 0 (no blur) to 100 (fully blurred).
+- **`blur=level`**: Applies a blur effect to the sticker/image. Accepts values from 0.3 (no blur) to 1000 (fully blurred).
 - **`lightness=level`**: Adjusts the lightness of the sticker/image. Accepts numeric values. Lightness is additive, impacting the overall brightness without altering the relative luminance of colors.
-- **`brightness=level`**: Modifies the brightness of the sticker/image. Accepts numeric values. Brightness operates multiplicatively, affecting the luminance of each color in the image.
-- **`saturation=level`**: Alters the saturation level. Accepts a numeric value, enhancing or reducing the color intensity.
+- **`brightness=level`**: Modifies the brightness of the sticker/image. Accepts positive numeric values. Brightness operates multiplicatively, affecting the luminance of each color in the image.
+- **`saturation=level`**: Alters the saturation level. Accepts positive numeric values, enhancing or reducing the color intensity.
 - **`hue=level`**: Changes the hue. Accepts values from 0 to 360 degrees.
 - **`removeBg`**: Removes the background. Requires a [remove.bg API key](https://www.remove.bg/es/dashboard#api-key) in the [.env file](./.env.example). No additional value required.
 - **`bgColor=color`**: Replaces the background with a specified color. Accepts color names (e.g., `red`) or hex codes (e.g., `#ff0000`).
@@ -34,9 +34,9 @@ Both `!sticker` and `!image` commands can be enhanced with these optional argume
 - **`textColor=color`**: Sets the text color. Effective only if text is added. Accepts color names or hex codes, defaulting to `black`.
 - **`textPosition=position`**: Adjusts text position. Effective only if text is added. Options include `top`, `topRight`, `right`, `bottomRight`, `bottom`, `bottomLeft`, `left`, `topLeft`, and `center`. Default is `top`.
 
+
 > [!TIP]
 > Multiple arguments can be combined and used at the same time for more customized effects.
-
 
 Here is an example of the base command:\
 ![Base command](https://github.com/totigm/whatsapp-stickers-bot/assets/64804554/446259b2-2cc6-459d-a546-442316df23ac)
