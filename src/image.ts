@@ -89,18 +89,22 @@ function getTextGravity(direction?: TextGravityKeys): TextGravity {
     return TextGravity[direction?.toLowerCase()] || TextGravity.top;
 }
 
-const DEFAULT_TEXT_SIZE = 256;
+const TEXT_DEFAULTS = {
+    textSize: 256,
+    height: 128,
+    heightOffset: 20,
+};
 
+// TODO: Allow multi-line text
 async function createTextImage(text: string, options?: Omit<TextOptions, "textPosition">) {
-    // TODO: Define font and size.
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
 
     const textDimensions = Jimp.measureText(font, text);
 
-    const image = new Jimp(textDimensions, 128, "transparent");
+    const image = new Jimp(textDimensions, TEXT_DEFAULTS.height + TEXT_DEFAULTS.heightOffset, "transparent");
     image.print(font, 0, 0, text);
 
-    const textSize = options?.textSize ?? DEFAULT_TEXT_SIZE;
+    const textSize = options?.textSize ?? TEXT_DEFAULTS.textSize;
     const sizeRatio = textSize / 128;
 
     const width = textDimensions * sizeRatio;
@@ -291,10 +295,16 @@ async function processMedia(media, transformations: Transformations) {
     if (transformations.text) {
         const { textPosition, ...textImageOptions } = transformations.textOptions;
 
-        const textImageBuffer = await createTextImage(transformations.text, textImageOptions);
-        const gravity = getTextGravity(textPosition);
+        try {
+            const textImageBuffer = await createTextImage(transformations.text, textImageOptions);
+            const gravity = getTextGravity(textPosition);
 
-        pipeline = pipeline.composite([{ input: textImageBuffer, gravity }]);
+            pipeline = pipeline.composite([{ input: textImageBuffer, gravity }]);
+        } catch (err) {
+            throw new Error(
+                "The text is too long to fit on a single line in the image. Please try using shorter text or increasing the image size.",
+            );
+        }
     }
 
     const processedBuffer = await pipeline.toBuffer();
