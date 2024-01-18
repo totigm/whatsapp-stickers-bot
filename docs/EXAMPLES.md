@@ -11,7 +11,7 @@ This document showcases examples of the different commands and options available
 ### Base Command with Video
 
 `!sticker`\
-![Converts a video into an animated sticker](https://github.com/totigm/whatsapp-stickers-bot/assets/64804554/846ae4a1-487f-495c-a3a6-eb95142d8cd2)
+![Converts a video into an animated sticker](https://github.com/totigm/whatsapp-stickers-bot/assets/64804554/5389f8f1-d2e5-4a28-bd91-cd76d352d103)
 *Converts a video into an animated sticker.*
 
 ### Resize
