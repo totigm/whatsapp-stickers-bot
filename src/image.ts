@@ -90,13 +90,12 @@ function getTextGravity(direction?: TextGravityKeys): TextGravity {
 }
 
 const TEXT_DEFAULTS = {
-    textSize: 256,
     height: 128,
     heightOffset: 20,
 };
 
 // TODO: Allow multi-line text
-async function createTextImage(text: string, options?: Omit<TextOptions, "textPosition">) {
+async function createTextImage(text: string, options: Omit<TextOptions, "textPosition"> = {}) {
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
 
     const textDimensions = Jimp.measureText(font, text);
@@ -104,13 +103,15 @@ async function createTextImage(text: string, options?: Omit<TextOptions, "textPo
     const image = new Jimp(textDimensions, TEXT_DEFAULTS.height + TEXT_DEFAULTS.heightOffset, "transparent");
     image.print(font, 0, 0, text);
 
-    const textSize = options?.textSize ?? TEXT_DEFAULTS.textSize;
-    const sizeRatio = textSize / 128;
+    if (options?.textSize) {
+        const textSize = options.textSize;
+        const sizeRatio = textSize / 128;
 
-    const width = textDimensions * sizeRatio;
-    const height = 128 * sizeRatio;
+        const width = textDimensions * sizeRatio;
+        const height = 128 * sizeRatio;
 
-    image.resize(width, height);
+        image.resize(width, height);
+    }
 
     if (options?.textColor) {
         image.color([{ apply: ColorActionName.XOR, params: [options.textColor] }]);
