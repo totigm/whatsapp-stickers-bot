@@ -1,7 +1,7 @@
 import { WAWebJS, HandlerMessage } from "@totigm/whatsapp-bot";
 import sharp from "sharp";
 import Jimp from "jimp";
-import { removeBackgroundFromImageBase64 } from "remove.bg";
+import { removeBackgroundFromImageBase64, RemoveBgBase64Options } from "remove.bg";
 import "dotenv/config";
 
 interface Transformations {
@@ -11,6 +11,7 @@ interface Transformations {
     grayscale?: boolean;
     modulate?: Partial<Modulate>;
     removeBg?: boolean;
+    backgroundOptions?: Partial<BackgroundOptions>;
     text?: string;
 }
 
@@ -21,19 +22,34 @@ interface Modulate {
     lightness?: number | undefined;
 }
 
-async function removeBackground(base64img: string) {
+interface BackgroundOptions {
+    bgColor?: string;
+    bgImageUrl?: string;
+}
+
+async function removeBackground(base64img: string, options?: BackgroundOptions) {
     try {
         const apiKey = process.env.REMOVE_BG_API_KEY;
         if (!apiKey) {
             throw "There's no API key defined for removing the background";
         }
 
-        const { base64img: resultImage } = await removeBackgroundFromImageBase64({
-            apiKey,
-            base64img,
+        const defaultOptions: Partial<RemoveBgBase64Options> = {
             position: "center",
             crop: true,
             format: "png",
+        };
+
+        const mappedOptions: Partial<RemoveBgBase64Options> = {
+            ...(options?.bgColor && { bg_color: options.bgColor }), // Add bg_color only if options.bgColor is defined
+            ...(options?.bgImageUrl && { bg_image_url: options.bgImageUrl }), // Add bg_image_url only if options.bgImageUrl is defined
+        };
+
+        const { base64img: resultImage } = await removeBackgroundFromImageBase64({
+            apiKey,
+            base64img,
+            ...defaultOptions,
+            ...mappedOptions,
         });
 
         if (!resultImage) {
@@ -43,7 +59,7 @@ async function removeBackground(base64img: string) {
         return resultImage;
     } catch (err) {
         const error = err as { title: string; code: string };
-        throw error.title;
+        throw typeof err === "string" ? err : error.title;
     }
 }
 
@@ -91,6 +107,7 @@ function parseNumber(value: unknown): number | undefined {
 function parseArgs(argsMap: { [key: string]: string | true }) {
     const transformations: Transformations = {};
     const modulate: Modulate = {};
+    const backgroundOptions: BackgroundOptions = {};
 
     for (const key in argsMap) {
         const value = argsMap[key];
@@ -135,8 +152,22 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
                 transformations.removeBg = true;
                 break;
             }
-            // TODO: Check value before assigning.
-            // Error processing sticker command: Error: Expected number for brightness but received NaN of type number
+            case "bgcolor": {
+                if (typeof value !== "string") {
+                    throw "Invalid input: Background color arg need a string";
+                }
+
+                backgroundOptions.bgColor = value;
+                break;
+            }
+            case "bgimageurl": {
+                if (typeof value !== "string") {
+                    throw "Invalid input: Background image url arg need a string";
+                }
+
+                backgroundOptions.bgImageUrl = value;
+                break;
+            }
             case "brightness": {
                 const parsedNumber = parseNumber(value);
                 if (!parsedNumber) {
@@ -179,6 +210,10 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
     if (Object.keys(modulate).length > 0) {
         transformations.modulate = modulate;
     }
+    if (Object.keys(backgroundOptions).length > 0) {
+        transformations.removeBg = true;
+        transformations.backgroundOptions = backgroundOptions;
+    }
 
     return transformations;
 }
@@ -187,7 +222,7 @@ async function processMedia(media, transformations: Transformations) {
     let mediaBuffer = Buffer.from(media.data, "base64");
 
     if (transformations.removeBg) {
-        const mediaWithoutBackground = await removeBackground(media.data);
+        const mediaWithoutBackground = await removeBackground(media.data, transformations.backgroundOptions);
         if (mediaWithoutBackground) mediaBuffer = Buffer.from(mediaWithoutBackground, "base64");
     }
 
