@@ -205,6 +205,10 @@ function parseArgs(argsMap: { [key: string]: string | true }) {
                 transformations.grayscale = true;
                 break;
             }
+            case "greyscale": {
+                transformations.grayscale = true;
+                break;
+            }
             case "removebg": {
                 transformations.removeBg = true;
                 break;
