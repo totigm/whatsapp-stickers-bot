@@ -330,16 +330,23 @@ type ImageOptions = {
 };
 
 export const handleImageMessage = async (message: HandlerMessage<WAWebJS.Message>, { isSticker = false }: ImageOptions = {}) => {
-    if (!message.hasMedia) {
-        return "Send an image or video to convert it to a sticker";
+    const typeText = isSticker ? "sticker" : "image";
+
+    let media: WAWebJS.MessageMedia;
+    if (message.hasMedia) {
+        media = await message.downloadMedia();
+    } else if (message.hasQuotedMsg) {
+        const quotedMessage = await message.getQuotedMessage();
+        if (quotedMessage.hasMedia) {
+            media = await quotedMessage.downloadMedia();
+        }
     }
 
-    const typeText = isSticker ? "sticker" : "image";
+    if (!media) return `Send an image or video to convert it to ${typeText}`;
 
     try {
         message.reply(`Processing your ${typeText}...`, message.from);
 
-        const media = await message.downloadMedia();
         if (!media.data) {
             return "Failed to download media. Please try again.";
         }
