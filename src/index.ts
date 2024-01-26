@@ -1,24 +1,30 @@
 import WhatsappBot from "@totigm/whatsapp-bot";
+import { handleImageMessage } from "./image";
 
-const bot = new WhatsappBot();
+const isProd = ["prod", "production"].includes(process.env.NODE_ENV);
 
-bot.addCommand(
-    "sticker",
-    async (message) => {
-        if (message.hasMedia) {
-            const media = await message.downloadMedia();
-            if (media.data)
-                message.reply(media, message.from, {
-                    sendMediaAsSticker: true,
-                });
-        } else message.reply("Send an image or video to convert it to a sticker");
+const bot = new WhatsappBot({
+    bot: {
+        symbol: isProd ? "!" : "??",
     },
-    {
-        description: "Convert an image or video to a sticker",
-        explanation: "Send an image or video with the text !sticker and you will get it as an sticker",
-        example: {
-            input: "image/video",
-            output: "sticker",
-        },
+});
+
+bot.addCommand("sticker", (message) => handleImageMessage(message, { isSticker: true }), {
+    description: "Convert an image or video to a sticker",
+    explanation:
+        "Send or quote an image or video with the command !sticker. Optionally (only working for images), add resize=width/height, negate, grayscale/greyscale, blur=level, lightness=level, brightness=level, saturation=level, hue=level, removeBg, bgColor=color, bgImageUrl=URL, text='Your text', textSize=size, textColor=color, and textPosition=position to edit the sticker",
+    example: {
+        input: "!sticker saturation=10 lightness=25 text='Hello world!' textColor=red textPosition=top",
+        output: "sticker with all those changes",
     },
-);
+});
+
+bot.addCommand("image", (message) => handleImageMessage(message), {
+    description: "Edits an image image",
+    explanation:
+        "Send or quote an image with the command !image. Optionally, add resize=width/height, negate, grayscale/greyscale, blur=level, lightness=level, brightness=level, saturation=level, hue=level, removeBg, bgColor=color, bgImageUrl=URL, text='Your text', textSize=size, textColor=color, and textPosition=position to edit the image",
+    example: {
+        input: "!image saturation=10 lightness=25 text='Hello world!' textColor=red textPosition=top",
+        output: "image with all those changes",
+    },
+});
