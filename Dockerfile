@@ -26,7 +26,7 @@ RUN set -x \
     ffmpeg
 
 COPY --from=builder ./app/dist ./dist 
-COPY package*.json .
+COPY package*.json *.env ./
 COPY *.wwebjs_auth .wwebjs_auth
 
 RUN npm install --omit=dev
