@@ -1,5 +1,6 @@
 import WhatsappBot from "@totigm/whatsapp-bot";
 import { handleImageMessage } from "./image";
+import { handleRecognizeTextImage } from "./textRecognition";
 
 const isProd = ["prod", "production"].includes(process.env.NODE_ENV);
 
@@ -26,5 +27,14 @@ bot.addCommand("image", (message) => handleImageMessage(message), {
     example: {
         input: "!image saturation=10 lightness=25 text='Hello world!' textColor=red textPosition=top",
         output: "image with all those changes",
+    },
+});
+
+bot.addCommand("recognizeText", handleRecognizeTextImage, {
+    description: "Recognizes text from an image",
+    explanation: "Send an image and get the text from it",
+    example: {
+        input: "image",
+        output: "This is a test image",
     },
 });
