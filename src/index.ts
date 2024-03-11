@@ -1,4 +1,4 @@
-import WhatsappBot from "@totigm/whatsapp-bot";
+import WhatsappBot, { WAWebJS } from "@totigm/whatsapp-bot";
 import { handleImageMessage } from "./image";
 import { handleYoutubeVideo } from "./youtube";
 
@@ -7,6 +7,11 @@ const isProd = ["prod", "production"].includes(process.env.NODE_ENV);
 const bot = new WhatsappBot({
     bot: {
         symbol: isProd ? "!" : "??",
+    },
+    client: {
+        authStrategy: new WAWebJS.LocalAuth({
+            clientId: isProd ? "prod" : "dev",
+        }),
     },
 });
 
