@@ -1,5 +1,6 @@
 import WhatsappBot from "@totigm/whatsapp-bot";
 import { handleImageMessage } from "./image";
+import { handleYoutubeVideo } from "./youtube";
 
 const isProd = ["prod", "production"].includes(process.env.NODE_ENV);
 
@@ -26,5 +27,14 @@ bot.addCommand("image", (message) => handleImageMessage(message), {
     example: {
         input: "!image saturation=10 lightness=25 text='Hello world!' textColor=red textPosition=top",
         output: "image with all those changes",
+    },
+});
+
+bot.addCommand("youtube", handleYoutubeVideo, {
+    description: "Download and send a YouTube video",
+    explanation: "Send a YouTube link with the command !youtube to download and send the video.",
+    example: {
+        input: "https://www.youtube.com/watch?v=example",
+        output: "video file",
     },
 });
